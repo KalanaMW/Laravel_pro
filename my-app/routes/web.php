@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Models\Game;
+use App\Models\News;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -19,13 +22,36 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Entertainment Theme Pages
-Route::get('/GameNews', function () {
-    return Inertia::render('GameNews');
-})->name('GameNews');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/GameNews', function () {
+        return Inertia::render('GameNews', [
+            'news' => News::all()
+        ]);
+    })->name('GameNews');
 
-Route::get('/upcoming', function () {
-    return Inertia::render('Upcoming');
-})->name('upcoming');
+    Route::get('/upcoming', function () {
+        return Inertia::render('Upcoming', [
+            'games' => Game::where('status', 'upcoming')->get()
+        ]);
+    })->name('upcoming');
+});
+
+// Admin Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
+        ->middleware('admin')
+        ->name('admin.dashboard');
+    
+    // Game Routes
+    Route::post('/admin/games/create', [AdminController::class, 'createGame']);
+    Route::post('/admin/games/update/{game}', [AdminController::class, 'updateGame']);
+    Route::delete('/admin/games/delete/{game}', [AdminController::class, 'deleteGame']);
+    
+    // News Routes
+    Route::post('/admin/news/create', [AdminController::class, 'createNews']);
+    Route::post('/admin/news/update/{news}', [AdminController::class, 'updateNews']);
+    Route::delete('/admin/news/delete/{news}', [AdminController::class, 'deleteNews']);
+});
 
 // Profile Routes
 Route::middleware('auth')->group(function () {
