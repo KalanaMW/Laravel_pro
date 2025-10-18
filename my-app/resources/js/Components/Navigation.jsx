@@ -1,12 +1,14 @@
 import { useState } from 'react';
+import { usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 
-export default function Navigation({ user }) {
-    const [searchQuery, setSearchQuery] = useState('');
+export default function Navigation() {
+    const { auth } = usePage().props;
+    const user = auth?.user;
+    const [searchQuery, setSearchQuery] = useState("");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
     return (
         <nav className="bg-gray-900 text-white">
             <div className="container mx-auto px-6 py-4">
@@ -18,21 +20,23 @@ export default function Navigation({ user }) {
                         </Link>
                     </div>
 
-                    {/* Search Bar */}
-                    <div className="hidden md:flex flex-1 max-w-xl mx-8">
-                        <div className="relative w-full">
-                            <input
-                                type="text"
-                                placeholder="Search games..."
-                                className="w-full px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            <button className="absolute right-3 top-2.5 text-gray-400 hover:text-white">
-                                <i className="fas fa-search"></i>
-                            </button>
+                    {/* Search Bar - Only for logged-in users */}
+                    {user && (
+                        <div className="hidden md:flex flex-1 max-w-xl mx-8">
+                            <div className="relative w-full">
+                                <input
+                                    type="text"
+                                    placeholder="Search games..."
+                                    className="w-full px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                <button className="absolute right-3 top-2.5 text-gray-400 hover:text-white">
+                                    <i className="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center space-x-6">
@@ -48,7 +52,14 @@ export default function Navigation({ user }) {
                         >
                             Upcoming
                         </Link>
-                        
+                        {user && (
+                            <Link
+                                href={route('downloads')}
+                                className="text-gray-300 hover:text-white transition"
+                            >
+                                Downloads
+                            </Link>
+                        )}
                         {/* Categories Dropdown - Only show for logged-in users */}
                         {user && (
                             <Dropdown>
@@ -65,7 +76,6 @@ export default function Navigation({ user }) {
                                 </Dropdown.Content>
                             </Dropdown>
                         )}
-
                         {user ? (
                             <Dropdown>
                                 <Dropdown.Trigger>
@@ -74,9 +84,7 @@ export default function Navigation({ user }) {
                                     </button>
                                 </Dropdown.Trigger>
                                 <Dropdown.Content align="right" width="48">
-                                    <Dropdown.Link href={route('dashboard')}>
-                                        Dashboard
-                                    </Dropdown.Link>
+                                    {/* Downloads link moved to navbar */}
                                     {user.is_admin && (
                                         <Dropdown.Link href={route('admin.dashboard')}>
                                             Admin Dashboard
@@ -122,18 +130,20 @@ export default function Navigation({ user }) {
                 {/* Mobile Menu */}
                 {isMobileMenuOpen && (
                     <div className="md:hidden mt-4 space-y-4">
-                        <div className="relative">
-                            <input
-                                type="text"
-                                placeholder="Search games..."
-                                className="w-full px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            <button className="absolute right-3 top-2.5 text-gray-400 hover:text-white">
-                                <i className="fas fa-search"></i>
-                            </button>
-                        </div>
+                        {user && (
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Search games..."
+                                    className="w-full px-4 py-2 bg-gray-800 text-white rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                                <button className="absolute right-3 top-2.5 text-gray-400 hover:text-white">
+                                    <i className="fas fa-search"></i>
+                                </button>
+                            </div>
+                        )}
                         <Link
                             href="/GameNews"
                             className="block text-gray-300 hover:text-white transition"
@@ -190,6 +200,14 @@ export default function Navigation({ user }) {
                                 >
                                     Log Out
                                 </Link>
+                                {user.is_admin && (
+                                    <Link
+                                        href={route('admin.dashboard')}
+                                        className="block text-orange-500 hover:text-white transition"
+                                    >
+                                        Admin Dashboard
+                                    </Link>
+                                )}
                             </>
                         ) : (
                             <div className="space-y-2">

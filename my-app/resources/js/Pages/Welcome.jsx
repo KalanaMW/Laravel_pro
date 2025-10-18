@@ -18,10 +18,10 @@ export default function Welcome({ auth }) {
                     <div className="flex justify-center gap-4">
                         {auth.user ? (
                             <Link
-                                href={route('dashboard')}
+                                href={route('downloads')}
                                 className="bg-yellow-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-yellow-600 transition w-40 text-center"
                             >
-                                Go to Dashboard
+                                Go to Downloads
                             </Link>
                         ) : (
                             <>

@@ -127,7 +127,7 @@ export default function Downloads({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth.user}>
-            <Head title="Dashboard" />
+            <Head title="Downloads" />
             <div className="bg-gradient-to-b from-white to-gray-100 text-gray-900 min-h-screen px-6 py-8">
                 {/* User Information */}
                 <div className="mb-6 text-center">

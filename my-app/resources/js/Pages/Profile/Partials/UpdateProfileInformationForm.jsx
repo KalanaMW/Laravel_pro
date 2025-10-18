@@ -16,12 +16,14 @@ export default function UpdateProfileInformation({
         useForm({
             name: user.name,
             email: user.email,
+            profile_photo: null,
         });
 
     const submit = (e) => {
         e.preventDefault();
-
-        patch(route('profile.update'));
+        patch(route('profile.update'), {
+            forceFormData: true,
+        });
     };
 
     return (
@@ -36,7 +38,26 @@ export default function UpdateProfileInformation({
                 </p>
             </header>
 
-            <form onSubmit={submit} className="mt-6 space-y-6">
+            <form onSubmit={submit} className="mt-6 space-y-6" encType="multipart/form-data">
+                {/* Profile Photo Upload */}
+                <div>
+                    <InputLabel htmlFor="profile_photo" value="Profile Photo" />
+                    {user.profile_photo_path && (
+                        <img
+                            src={user.profile_photo_path.startsWith('http') ? user.profile_photo_path : `/storage/${user.profile_photo_path}`}
+                            alt="Profile"
+                            className="w-24 h-24 rounded-full mb-2 object-cover"
+                        />
+                    )}
+                    <input
+                        id="profile_photo"
+                        type="file"
+                        accept="image/*"
+                        className="mt-1 block w-full"
+                        onChange={e => setData('profile_photo', e.target.files[0])}
+                    />
+                    <InputError className="mt-2" message={errors.profile_photo} />
+                </div>
                 <div>
                     <InputLabel htmlFor="name" value="Name" />
 

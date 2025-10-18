@@ -18,23 +18,21 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return Inertia::render('Downloads');
+})->middleware(['auth', 'verified'])->name('downloads');
 
 // Entertainment Theme Pages
-Route::middleware(['auth'])->group(function () {
-    Route::get('/GameNews', function () {
-        return Inertia::render('GameNews', [
-            'news' => News::all()
-        ]);
-    })->name('GameNews');
+Route::get('/GameNews', function () {
+    return Inertia::render('GameNews', [
+        'news' => News::all()
+    ]);
+})->name('GameNews');
 
-    Route::get('/upcoming', function () {
-        return Inertia::render('Upcoming', [
-            'games' => Game::where('status', 'upcoming')->get()
-        ]);
-    })->name('upcoming');
-});
+Route::get('/upcoming', function () {
+    return Inertia::render('Upcoming', [
+        'games' => Game::where('status', 'upcoming')->get()
+    ]);
+})->name('upcoming');
 
 // Admin Routes
 Route::middleware('auth')->group(function () {
